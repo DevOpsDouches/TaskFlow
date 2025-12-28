@@ -1,5 +1,6 @@
 // services/AuthService.js
-const API_BASE_URL = process.env.REACT_APP_AUTH_SERVICE_URL || 'http://localhost:3001';
+// Use relative URL - Nginx will proxy to auth-service internally
+const API_BASE_URL = process.env.REACT_APP_AUTH_SERVICE_URL || '';
 
 export const AuthService = {
   /**
@@ -92,4 +93,3 @@ export const AuthService = {
     return { success: true };
   }
 };
-

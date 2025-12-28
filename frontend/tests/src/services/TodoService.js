@@ -1,5 +1,6 @@
 // services/TodoService.js
-const TODO_API_BASE_URL = process.env.REACT_APP_TODO_SERVICE_URL || 'http://localhost:3002';
+// Use relative URL - Nginx will proxy to todo-service internally
+const TODO_API_BASE_URL = process.env.REACT_APP_TODO_SERVICE_URL || '';
 
 export const TodoService = {
   /**

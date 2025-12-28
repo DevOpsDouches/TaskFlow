@@ -50,10 +50,8 @@ services:
     build: ./frontend/tests
     ports:
       - "80:80"
-    environment:
-      # For development, use localhost. For production, use your domain/IP
-      - REACT_APP_AUTH_SERVICE_URL=${REACT_APP_AUTH_SERVICE_URL:-http://localhost:3001}
-      - REACT_APP_TODO_SERVICE_URL=${REACT_APP_TODO_SERVICE_URL:-http://localhost:3002}
+    # Removed REACT_APP_* environment variables
+    # Nginx will proxy API calls internally to auth-service and todo-service
     depends_on:
       - auth-service
       - todo-service
