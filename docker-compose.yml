@@ -1,0 +1,66 @@
+version: '3.8'
+
+services:
+  auth-service:
+    build: ./auth-service
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - DB_HOST=${DB_HOST:-mytest.cfym6wc6iyzn.ap-south-1.rds.amazonaws.com}
+      - DB_USER=${DB_USER:-admin}
+      - DB_PASSWORD=${DB_PASSWORD:-abcdefgh}
+      - DB_NAME=${DB_NAME:-todo_app}
+      - DB_PORT=${DB_PORT:-3306}
+      - JWT_SECRET=${JWT_SECRET:-your_super_secret_jwt_key_change_in_production_12345}
+    restart: unless-stopped
+    networks:
+      - todo-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  todo-service:
+    build: ./todo-service
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - DB_HOST=${DB_HOST:-mytest.cfym6wc6iyzn.ap-south-1.rds.amazonaws.com}
+      - DB_USER=${DB_USER:-admin}
+      - DB_PASSWORD=${DB_PASSWORD:-abcdefgh}
+      - DB_NAME=${DB_NAME:-todo_app}
+      - DB_PORT=${DB_PORT:-3306}
+      - AUTH_SERVICE_URL=http://auth-service:3001
+    depends_on:
+      auth-service:
+        condition: service_started
+    restart: unless-stopped
+    networks:
+      - todo-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build: ./frontend/tests
+    ports:
+      - "80:80"
+    environment:
+      # For development, use localhost. For production, use your domain/IP
+      - REACT_APP_AUTH_SERVICE_URL=${REACT_APP_AUTH_SERVICE_URL:-http://localhost:3001}
+      - REACT_APP_TODO_SERVICE_URL=${REACT_APP_TODO_SERVICE_URL:-http://localhost:3002}
+    depends_on:
+      - auth-service
+      - todo-service
+    restart: unless-stopped
+    networks:
+      - todo-network
+
+networks:
+  todo-network:
+    driver: bridge
