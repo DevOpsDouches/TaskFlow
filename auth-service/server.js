@@ -8,8 +8,12 @@ const mysql = require('mysql2/promise');
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+const corsOptions = {
+  origin: ['http://35.154.6.99:3000', 'http://35.154.6.99']
+};
+
 // Middleware
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // MySQL/RDS Connection Pool Configuration
